@@ -13,7 +13,7 @@ from urllib.request import urlopen
 
 # Create dash app with "Carbon Emissions" as tab title
 # External_stylesheets is the style of bg and text ect.
-app = dash.Dash(__name__, title='Carbon Emissions', external_stylesheets=[])
+app = dash.Dash(__name__, title='Carbon Emissions')  # external_stylesheets=[dbc.themes.BOOTSTRAP]
 # dbc.themes.SUPERHERO
 
 # Colors in hex code
@@ -67,23 +67,25 @@ def get_json_data(filename='states.json', path=None):
      Input(component_id='sector-button', component_property='value')])
 def update_map_slider(date_dropdown, fuel_type):
     if type(date_dropdown) != str:
-        empty_fig = go.Figure(go.Choropleth())
-        empty_fig.update_layout(geo_scope='usa')
+        empty_fig = go.Figure(go.Choropleth(), layout=go.Layout(paper_bgcolor='#f2f7ff'))
+        empty_fig.update_layout(geo_scope='usa', height=800, margin={"r": 0, "t": 0, "l": 0, "b": 0})
         return empty_fig
     year_fuel_type_filter = ((df["Year"] == int(date_dropdown)) & (df["Carbon Output Type"] == fuel_type))
-    fuel_type_filter = df["Carbon Output Type"] == fuel_type
+    fuel_type_filter = (df["Carbon Output Type"] == fuel_type) & (df["Carbon Output Value"] > 0.1)
     update_fig = go.Figure(
         go.Choropleth(geojson=json_data, locations=df[year_fuel_type_filter]['ID'],
                       z=df[year_fuel_type_filter]["Carbon Output Value"],
                       name=date_dropdown.title(),
-                      zmax=df[fuel_type_filter]["Carbon Output Value"].max(),
-                      zmin=df[fuel_type_filter]["Carbon Output Value"].min(), colorscale="ylorrd"),
-        layout={'title': 'Carbon Emissions ' + str(df.loc[0, 'Unit Measurement'])})
+                      zmax=df.loc[fuel_type_filter, "Carbon Output Value"].max(),
+                      zmin=df.loc[fuel_type_filter, "Carbon Output Value"].min(), colorscale="ylorrd"),
+        layout=go.Layout(paper_bgcolor='#f2f7ff'))
     # layout=go.Layout(paper_bgcolor=colors['bg']))
     update_fig.update_layout(geo_scope='usa')
     update_fig.update_layout(height=800, margin={"r": 0, "t": 0, "l": 0, "b": 0})
     update_fig.update_coloraxes(colorbar_tickcolor='#a83232')
     update_fig.update_coloraxes(colorbar_tickfont_color='#a83232')
+    print(str(fuel_type), "max", str(df.loc[fuel_type_filter, "Carbon Output Value"].max()))
+    print(str(fuel_type), "min", str(df.loc[fuel_type_filter, "Carbon Output Value"].min()))
     return update_fig
 
 
@@ -125,7 +127,7 @@ def get_range_years_for_dropdown(df):
 json_data = get_json_data()
 
 load_data = True
-save_df = False
+save_df = True
 if load_data:
     df = pd.read_excel('all_data_df.xlsx')
 else:
@@ -136,10 +138,12 @@ else:
         df.to_excel('all_data_df.xlsx', index=False)
 
 df.head()
+print(df)
+print(df.columns)
 
 # layout of app
-app.layout = dbc.Container(children=[
-    html.H1(id='Title-sector'),
+app.layout = html.Div(children=[
+    html.H1(id='Title-sector', style={"margin":0}),
     html.H3(children='Data was provided by the EIA.'),
     dcc.Tabs(id='all-tabs', value='raw-carbon', children=[
         dcc.Tab(id='raw-carbon', value='raw-carbon', label='Raw Carbon Emissions',
@@ -147,57 +151,53 @@ app.layout = dbc.Container(children=[
                 selected_className='custom-tab--selected',
                 children=[
                     html.Div([
-                        dbc.Row([
-                            dbc.Col(
-                                dcc.Dropdown(
-                                    id='date-dropdown',
-                                    placeholder='Year',
-                                    options=get_range_years_for_dropdown(df),
-                                    style={'color': 'black', 'width': '100px', 'justify-content': 'center',
-                                           "margin": 'auto',
-                                           'align-items': 'center'},
-                                    value=str(df["Year"].max()),
-                                    className='dropdown-date'
-                                ), width='auto'),
+                            dcc.Dropdown(
+                                id='date-dropdown',
+                                placeholder='Year',
+                                options=get_range_years_for_dropdown(df),
+                                style={'color': 'black',  'justifyContent': 'center', 'alignItems': 'center'},
+                                # "margin": 'auto', 'align-items': 'center'
+                                value=str(df["Year"].max()),
+                                className='child-dropdown'
+                            ),
 
-                            dbc.Col(
-                                dbc.RadioItems(
-                                    id='sector-button',
-                                    options=[
-                                        {"label": "Jet Fuel", "value": "jet fuel"},
-                                        {"label": "Aviation Gas", "value": "aviation gasoline"},
-                                        {"label": "All Fuel", "value": "all fuel"}
-                                        #
-                                    ],
-                                    value='all fuel',
-                                    style={'textAlign': 'center', 'width': 'auto'},
-                                    inline=True,
-                                    labelStyle={'fontSize': '20px'},
-                                    className='radioitems-fueltype'
-                                ), width='auto'),
-                        ],
-                            justify="center"),
+                            dcc.RadioItems(
+                                id='sector-button',
+                                options=[
+                                    {"label": "Jet Fuel", "value": "jet fuel"},
+                                    {"label": "Aviation Gas", "value": "aviation gasoline"},
+                                    {"label": "All Fuel", "value": "all fuel"}
+                                    #
+                                ],
+                                value='all fuel',
+                                style={},  # 'textAlign': 'center', 'width': 'auto'
+                                labelStyle={'fontSize': '20px'},
+                                className='child-radioitems'
+                            )
+                    ], className='container'),
 
-                        dcc.Graph(
-                            id='example-map',
-                            style={"width": '75%', "margin": 'auto', 'align-items': 'center',
-                                   'justifyContent': 'center', 'padding-left': '0%', 'padding-right': '0%'},
-                            config={'scrollZoom': False},
-                            #          figure=None
-                        ),
-                    ], className='div-tab')]),
+                    dcc.Graph(
+                        id='example-map',
+                        style={"width": '75%', "margin": 'auto', 'align-items': 'center',
+                               'justifyContent': 'center', "padding":"20px", #"height":"900px",
+                               "borderRadius": "25px"},
+                        config={'scrollZoom': False},
+                        #          figure=None
+                    ),
+                ]),
 
         dcc.Tab(id='carbon-per-capita', value='carbon-per-capita', label='Carbon Emissions per Capita',
                 style={'color': 'black', 'fontSize': '20px'},
                 selected_className='custom-tab--selected',
                 children=[
-                    html.Div(children=[])
-                ])
+                    html.Div(children="Second Tab")
+                ]),
     ]),
+    html.Div(className='container', children=[
+        html.H4(children='Updated: ' + dp.format_eia_update_date(df["Updated Time"].iloc[0]), className='child-text')
+        ]),
 
-    html.H6(children='Updated: ' + df["Updated Time"].iloc[0]),
-
-], fluid=False, className='div-main-background')
+], className='div-main-background')
 
 if __name__ == '__main__':
     print("Running server")
@@ -208,3 +208,4 @@ if __name__ == '__main__':
 # TODO Plot sectors
 # TODO Create per capita map
 # TODO get embedded figure
+# TODO fix CO2 for all fuel (millions -> normal)

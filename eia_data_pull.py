@@ -4,8 +4,10 @@
 import pandas as pd
 import requests
 import time
+import json
+# from math import floor as fl
 
-
+# class for organizing Eia data
 class CarbonEmission:
     def __init__(self, link):
         self.link = link
@@ -50,7 +52,7 @@ class CarbonEmission:
         df = df.append(data_vals, ignore_index=True)
         return df
 
-
+# Converts seconds to minutes and hrs
 def time_convert(sec):
     mins = sec // 60
     sec = sec % 60
@@ -59,6 +61,8 @@ def time_convert(sec):
     return "Time Elapsed: {0}hrs,  {1}min,  {2}sec".format(int(hours), int(mins), round(sec, 2))
 
 
+# Wrapper for data cleaning functions
+# Displays Runtime of function and function name
 def status(func):
     def wrapper(*args, **kwargs):
         print("-------------")
@@ -138,7 +142,9 @@ eia_url = {
 # series id is the id of type of data for state (final link)
 
 data = {}
-
+def rd(n, decimals=0):
+    multiplier = 10 ** decimals
+    return int(int(n * multiplier) / multiplier)
 
 @ status
 def get_link_to_all_data_sets_for_state():
@@ -174,18 +180,26 @@ def convert_links_to_classes(data):
 
 
 @status
-def combine_state_df_all(save = False, save_as="All_EIA_Data"):
-    df = pd.DataFrame(columns=["ID", "State", "Carbon Output Type", "Year", "Carbon Output Value", "Unit Measurement",
+def combine_state_df_all(save = False, save_as="All_EIA_Data", data=data):
+    df = pd.DataFrame(columns=["ID", "State", "Population", "Carbon Output perCap", "Carbon Output Type", "Year", "Carbon Output Value", "Unit Measurement",
                                "Updated Time"])
+    df = df.astype(dtype={"Year":"int16"})
+    with open('state_pops.json', 'r') as data_file:
+        state_pop = json.load(data_file)
+    print(state_pop.keys())
     for i, state in enumerate(data):
         for sector in data[state]:
             if i == 0:
                 range_years = data[state][sector].get_range_years()
             for j, year in enumerate(range_years):
-                row_to_append = ['', state, sector, year, data[state][sector].get_data_values()[j],
+                row_to_append = ['', state, state_pop[str(rd(year, -1))][state], data[state][sector].get_data_values()[j]/int(state_pop[str(rd(year, -1))][state]), sector, year, data[state][sector].get_data_values()[j],
                                  data[state][sector].get_units(), data[state][sector].get_updated_date()]
                 # [ID, State, Sector, Year, CO2 Output, Unit, Date]
                 df = df.append(pd.Series(row_to_append, index=df.columns), ignore_index=True)
+
+    # df = df.astype({"Carbon Output Value":str})
+    print(df.dtypes)
+    df = convert_mil_metric_ton(df)
     if save:
         df.to_excel(save_as + ".xlsx", index=False)
     return df
@@ -211,16 +225,32 @@ def combine_state_df(sector_name, save = False, save_as: str = None, data = data
     return df
 
 
+def format_eia_update_date(eia_date:str):
+    # 2021-05-13T13:41:31-0400
+    # Selects only date from eia update date
+    return eia_date[:eia_date.find('T')]
+
+
+def convert_mil_metric_ton(df):
+    # converts all fuel co2 val (in millions metric tons) to teh co2 val in metric tons
+    select = (df["Unit Measurement"] == "million metric tons CO2")
+    df.loc[select, "Carbon Output Value"] = 1000000.0 * df.loc[select, "Carbon Output Value"]
+    return df
+
 # links = get_link_to_all_data_sets_for_state()
 # links = get_data_links_for_aviation_sectors(links)
 # class_data = convert_links_to_classes(links)
+
+    # links = get_link_to_all_data_sets_for_state()
+    # links = get_data_links_for_aviation_sectors(links)
+    # class_data = convert_links_to_classes(links)
 # print(class_data)
 
-if __name__ == "__main":
-    get_link_to_all_data_sets_for_state()
-    print(data)
-    get_data_links_for_aviation_sectors()
-    convert_links_to_classes()
+if __name__ == "__main__":
+    links = get_link_to_all_data_sets_for_state()
+    links = get_data_links_for_aviation_sectors(links)
+    class_data = convert_links_to_classes(links)
+    print(class_data)
     # with open('eia_dict_data.txt', 'w') as text_file:
     #     text_file.write(json.dumps(data))
 
@@ -236,4 +266,4 @@ if __name__ == "__main":
     print("DF", data["California"]["jet fuel"].get_df())
     print("obj", data)
     print("obj", data["California"]["jet fuel"])
-    combine_state_df("all fuel")
+    combine_state_df_all(save=True)

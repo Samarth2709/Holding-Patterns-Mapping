@@ -1,0 +1,83 @@
+.custom-tab--selected {
+    color: black;
+    box-shadow: 0px 5px 10px black;
+    border-left: 2px solid #458fff !important;
+    border-right: 2px solid #458fff !important;
+    border-top: 5px solid #458fff !important;
+    font-size: 20px;
+}
+.div_container_options{
+    width: 100%
+}
+
+.dropdown-date  {
+    /*color: black;*/
+    padding-top: 20px;
+    padding-left: 20.25%; /* 16:9 */
+    position: relative;
+    padding-bottom: 5px;
+    /*height: px;*/
+}
+
+.radioitems-fueltype{
+    padding-top: 10px;
+    /*padding-left: 320px;*/
+    padding-left: 10.25%; /* 16:9 */
+    position: relative;
+    padding-bottom: 5px;
+    /*height: px;*/
+}
+
+.div-tab{
+    border-right: 5px solid black !important;
+}
+
+.div-main-background{
+    /*background-color: #2492ed;      #004278*/
+    margin: 0;
+    padding-top: 0;
+}
+
+html{
+    background: #004278;
+    color: white !important;
+    overflow-x: hidden;
+}
+
+.Select-control{
+    width:100px
+}
+
+.container {
+    width: 100%; /* pick whatever width you want */
+}
+
+.container .child-dropdown {
+    width: 100%;
+    padding-top: 10px;
+    padding-left: 12.25%;
+    padding-bottom: 5px;
+    /*position: relative;
+    align-items: center;
+    display: flex;*/
+    max-width: 300px;
+    min-width: 300px;
+
+}
+
+.container .child-radioitems {
+    width: 100%;
+    padding-top: 10px;
+    padding-left: 12.25%;
+    padding-bottom: 5px;
+}
+
+.container .child-text {
+    width: 100%;
+    padding-top: 5px;
+    padding-left: 12.5%;
+    padding-bottom: 5px;
+    margin-top: 0;
+}
+
+
