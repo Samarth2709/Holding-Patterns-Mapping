@@ -65,7 +65,7 @@ def get_json_data(filename='states.json', path=None):
     Output(component_id='example-map', component_property='figure'),
     [Input(component_id='date-dropdown', component_property='value'),
      Input(component_id='sector-button', component_property='value')])
-def update_map_slider(date_dropdown, fuel_type):
+def update_raw_map(date_dropdown, fuel_type):
     if type(date_dropdown) != str:
         empty_fig = go.Figure(go.Choropleth(), layout=go.Layout(paper_bgcolor='#f2f7ff'))
         empty_fig.update_layout(geo_scope='usa', height=800, margin={"r": 0, "t": 0, "l": 0, "b": 0})
@@ -89,6 +89,33 @@ def update_map_slider(date_dropdown, fuel_type):
     return update_fig
 
 
+# Update carbon emissions map per major airport
+@app.callback(
+    Output(component_id='emissions-per-air', component_property='figure'),
+    [Input(component_id='date-dropdown-per-air', component_property='value'),
+     Input(component_id='sector-button-per-air', component_property='value')])
+def update_per_map(date_dropdown, fuel_type):
+    if type(date_dropdown) != str:
+        empty_fig = go.Figure(go.Choropleth(), layout=go.Layout(paper_bgcolor='#f2f7ff'))
+        empty_fig.update_layout(geo_scope='usa', height=800, margin={"r": 0, "t": 0, "l": 0, "b": 0})
+        return empty_fig
+    year_fuel_type_filter = ((df["Year"] == int(date_dropdown)) & (df["Carbon Output Type"] == fuel_type))
+    fuel_type_filter = (df["Carbon Output Type"] == fuel_type) & (df['Carbon per Airport Count'] > 0.1)
+    update_fig = go.Figure([
+        go.Choropleth(geojson=json_data, locations=df[year_fuel_type_filter]['ID'],
+                      z=df[year_fuel_type_filter]["Carbon per Airport Count"],
+                      name=date_dropdown.title(),
+                      zmax=df.loc[fuel_type_filter, 'Carbon per Airport Count'].max(),
+                      zmin=df.loc[fuel_type_filter, 'Carbon per Airport Count'].min(), colorscale="ylorrd"),
+        # go.Scattergeo(lon=, lat=, fillcolor=)
+
+    ],
+        layout=go.Layout(paper_bgcolor='#f2f7ff'))
+    update_fig.update_layout(geo_scope='usa')
+    update_fig.update_layout(height=800, margin={"r": 0, "t": 0, "l": 0, "b": 0})
+    return update_fig
+
+
 # layout = go.Layout(paper_bgcolor=colors['bg']
 # bgcolor=colors['bg'] in dict
 # plot_bgcolor=colors['bg']
@@ -109,9 +136,14 @@ def update_map_slider(date_dropdown, fuel_type):
 #       aviation gasoline, jet fuel))
 @app.callback(
     Output(component_id='Title-sector', component_property='children'),
-    [Input(component_id='sector-button', component_property='value')])
-def update_sector_name(name):
-    return ('Carbon Emissions for ' + name + " from transportation").title()
+    [Input(component_id='sector-button', component_property='value'),
+     Input(component_id='sector-button-per-air', component_property='value'),
+     Input(component_id='all-tabs', component_property='value')])
+def update_sector_name(raw_name, per_air_name, tab):
+    if tab == 'raw-carbon':
+        return ('Carbon Emissions for ' + raw_name + " from transportation").title()
+    elif tab == 'carbon-per-air':
+        return ('Carbon Emissions for ' + per_air_name + " from transportation").title()
 
 
 # Gets the range of years to display in the
@@ -133,6 +165,7 @@ if load_data:
 else:
     # create df with IDs
     df = dp.combine_state_df_all(data=get_eia_data())
+    df = dp.add_major_airport_count(data=df)
     df = add_id_to_df(df, json_data)
     if save_df:
         df.to_excel('all_data_df.xlsx', index=False)
@@ -143,7 +176,7 @@ print(df.columns)
 
 # layout of app
 app.layout = html.Div(children=[
-    html.H1(id='Title-sector', style={"margin":0}),
+    html.H1(id='Title-sector', style={"margin": 0}),
     html.H3(children='Data was provided by the EIA.'),
     dcc.Tabs(id='all-tabs', value='raw-carbon', children=[
         dcc.Tab(id='raw-carbon', value='raw-carbon', label='Raw Carbon Emissions',
@@ -151,51 +184,83 @@ app.layout = html.Div(children=[
                 selected_className='custom-tab--selected',
                 children=[
                     html.Div([
-                            dcc.Dropdown(
-                                id='date-dropdown',
-                                placeholder='Year',
-                                options=get_range_years_for_dropdown(df),
-                                style={'color': 'black',  'justifyContent': 'center', 'alignItems': 'center'},
-                                # "margin": 'auto', 'align-items': 'center'
-                                value=str(df["Year"].max()),
-                                className='child-dropdown'
-                            ),
+                        dcc.Dropdown(
+                            id='date-dropdown',
+                            placeholder='Year',
+                            options=get_range_years_for_dropdown(df),
+                            style={'color': 'black', 'justifyContent': 'center', 'alignItems': 'center'},
+                            # "margin": 'auto', 'align-items': 'center'
+                            value=str(df["Year"].max()),
+                            className='child-dropdown'
+                        ),
 
-                            dcc.RadioItems(
-                                id='sector-button',
-                                options=[
-                                    {"label": "Jet Fuel", "value": "jet fuel"},
-                                    {"label": "Aviation Gas", "value": "aviation gasoline"},
-                                    {"label": "All Fuel", "value": "all fuel"}
-                                    #
-                                ],
-                                value='all fuel',
-                                style={},  # 'textAlign': 'center', 'width': 'auto'
-                                labelStyle={'fontSize': '20px'},
-                                className='child-radioitems'
-                            )
+                        dcc.RadioItems(
+                            id='sector-button',
+                            options=[
+                                {"label": "Jet Fuel", "value": "jet fuel"},
+                                {"label": "Aviation Gas", "value": "aviation gasoline"},
+                                {"label": "All Fuel", "value": "all fuel"}
+                                #
+                            ],
+                            value='all fuel',
+                            style={},  # 'textAlign': 'center', 'width': 'auto'
+                            labelStyle={'fontSize': '20px'},
+                            className='child-radioitems'
+                        )
                     ], className='container'),
 
                     dcc.Graph(
                         id='example-map',
                         style={"width": '75%', "margin": 'auto', 'align-items': 'center',
-                               'justifyContent': 'center', "padding":"20px", #"height":"900px",
-                               "borderRadius": "25px"},
+                               'justifyContent': 'center', "padding": "20px", "height": "800px",
+                               "borderRadius": "25px", "padding-bottom": "10px"},
                         config={'scrollZoom': False},
                         #          figure=None
                     ),
                 ]),
 
-        dcc.Tab(id='carbon-per-capita', value='carbon-per-capita', label='Carbon Emissions per Capita',
+        dcc.Tab(id='carbon-per-air', value='carbon-per-air', label='Carbon Emissions per Major Airport',
                 style={'color': 'black', 'fontSize': '20px'},
                 selected_className='custom-tab--selected',
                 children=[
-                    html.Div(children="Second Tab")
+                    html.Div([
+                        dcc.Dropdown(
+                            id='date-dropdown-per-air',
+                            placeholder='Year',
+                            options=get_range_years_for_dropdown(df),
+                            style={'color': 'black', 'justifyContent': 'center', 'alignItems': 'center'},
+                            # "margin": 'auto', 'align-items': 'center'
+                            value=str(df["Year"].max()),
+                            className='child-dropdown'
+                        ),
+
+                        dcc.RadioItems(
+                            id='sector-button-per-air',
+                            options=[
+                                {"label": "Jet Fuel", "value": "jet fuel"},
+                                {"label": "Aviation Gas", "value": "aviation gasoline"},
+                                {"label": "All Fuel", "value": "all fuel"}
+                                #
+                            ],
+                            value='all fuel',
+                            style={},  # 'textAlign': 'center', 'width': 'auto'
+                            labelStyle={'fontSize': '20px'},
+                            className='child-radioitems'
+                        )
+                    ], className='container'),
+
+                    dcc.Graph(
+                        id='emissions-per-air',
+                        style={"width": '75%', "margin": 'auto', 'align-items': 'center',
+                               'justifyContent': 'center', "padding": "20px", "height": "800px",
+                               "borderRadius": "25px", "padding-bottom": "10px"},
+                        config={'scrollZoom': False},
+                        #          figure=None
+                    )
                 ]),
     ]),
-    html.Div(className='container', children=[
-        html.H4(children='Updated: ' + dp.format_eia_update_date(df["Updated Time"].iloc[0]), className='child-text')
-        ]),
+    html.H4(children='Updated: ' + dp.format_eia_update_date(df["Updated Time"].iloc[0]), style={'padding-left': '12.5%'}, className='bottom-text'),
+    html.H4(children='Carbon Emissions in ' + df['Unit Measurement'].iloc[0], style={'padding-left': '12.5%'}, className='bottom-text'),
 
 ], className='div-main-background')
 

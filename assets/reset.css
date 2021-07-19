@@ -42,6 +42,7 @@ html{
     background: #004278;
     color: white !important;
     overflow-x: hidden;
+    font-family: Helvetica, Arial, sans-serif;
 }
 
 .Select-control{
@@ -50,6 +51,8 @@ html{
 
 .container {
     width: 100%; /* pick whatever width you want */
+    /*display: inline-block;*/
+
 }
 
 .container .child-dropdown {
@@ -78,6 +81,16 @@ html{
     padding-left: 12.5%;
     padding-bottom: 5px;
     margin-top: 0;
+    float:left;
+}
+
+.bottom-text{
+    padding-top:5px;
+    margin:0;
+    padding-left: 12.5%;
+}
+.bottom-text#last{
+    padding-top:5px;
 }
 
 

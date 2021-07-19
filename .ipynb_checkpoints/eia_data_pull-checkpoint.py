@@ -174,7 +174,7 @@ def convert_links_to_classes(data):
 
 
 @status
-def combine_state_df_all(save = False, save_as="All_EIA_Data"):
+def combine_state_df_all(save = False, save_as="All_EIA_Data", data=data):
     df = pd.DataFrame(columns=["ID", "State", "Carbon Output Type", "Year", "Carbon Output Value", "Unit Measurement",
                                "Updated Time"])
     for i, state in enumerate(data):
@@ -216,11 +216,11 @@ def combine_state_df(sector_name, save = False, save_as: str = None, data = data
 # class_data = convert_links_to_classes(links)
 # print(class_data)
 
-if __name__ == "__main":
-    get_link_to_all_data_sets_for_state()
-    print(data)
-    get_data_links_for_aviation_sectors()
-    convert_links_to_classes()
+if __name__ == "__main__":
+    links = get_link_to_all_data_sets_for_state()
+    links = get_data_links_for_aviation_sectors(links)
+    class_data = convert_links_to_classes(links)
+    print(class_data)
     # with open('eia_dict_data.txt', 'w') as text_file:
     #     text_file.write(json.dumps(data))
 
@@ -236,4 +236,4 @@ if __name__ == "__main":
     print("DF", data["California"]["jet fuel"].get_df())
     print("obj", data)
     print("obj", data["California"]["jet fuel"])
-    combine_state_df("all fuel")
+    combine_state_df_all(save=True)

@@ -225,6 +225,39 @@ def combine_state_df(sector_name, save = False, save_as: str = None, data = data
     return df
 
 
+@status
+def add_major_airport_count(data, main_airports_df=None, main_airports_path='main_df_major_airports.xlsx'):
+    if not main_airports_df:
+        main_airport = convert_main_air_json(filename = main_airports_path)
+    else:
+        main_airport = convert_main_air_json(df=main_airports_df)
+
+    data['Airport Count'] = ''
+    data['Carbon per Airport Count'] = ''
+    for year in data["Year"].unique():
+        year_filter = (data['Year'] == year)
+        for state in data[year_filter]['State'].unique():
+            state_filter = (data['State'] == state)
+            try:
+                data.loc[year_filter & state_filter, 'Airport Count'] = main_airport[take_closest(year, list(main_airport.keys()))][state]
+            except KeyError:
+                data.loc[year_filter & state_filter, 'Airport Count'] = 1
+    data['Carbon per Airport Count'] = data['Carbon Output Value'] / data['Airport Count']
+    return data
+
+
+def convert_main_air_json(filename='main_df_major_airports.xlsx', df = None):
+    if not df:
+        df = pd.read_excel(filename)
+    main_airport_dict = {}
+    for year in df['Year'].unique():
+        states_in_year = {}
+        for state in df[df['Year'] == year]['ST'].unique():
+            states_in_year[state] = int(list(df[df['Year'] == year]['ST']).count(state))+1
+        main_airport_dict[year] = states_in_year
+    return main_airport_dict
+
+
 def format_eia_update_date(eia_date:str):
     # 2021-05-13T13:41:31-0400
     # Selects only date from eia update date
@@ -236,6 +269,12 @@ def convert_mil_metric_ton(df):
     select = (df["Unit Measurement"] == "million metric tons CO2")
     df.loc[select, "Carbon Output Value"] = 1000000.0 * df.loc[select, "Carbon Output Value"]
     return df
+
+def take_closest(num,collection):
+   return min(collection,key=lambda x:abs(x-num))
+
+
+
 
 # links = get_link_to_all_data_sets_for_state()
 # links = get_data_links_for_aviation_sectors(links)
