@@ -44,7 +44,6 @@ def get_all_dfs(path=None, state_col="ST"):
     return dfs
 
 
-# print(get_all_dfs())
 
 def create_main_df(dic_dfs, state_col='ST'):
     # concatenates all dfs in dict dfs with their associated year

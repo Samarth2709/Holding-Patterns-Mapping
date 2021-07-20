@@ -1,15 +1,15 @@
-import plotly.express as px
+# Created by Samarth Kumbla
+# Nasa VIP Internship
+
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 import pandas as pd
 import os
 import json
 import eia_data_pull as dp
-from urllib.request import urlopen
 
 # Create dash app with "Carbon Emissions" as tab title
 # External_stylesheets is the style of bg and text ect.
@@ -158,7 +158,7 @@ def get_range_years_for_dropdown(df):
 # Get json data
 json_data = get_json_data()
 
-load_data = False
+load_data = True
 save_df = True
 if load_data:
     df = pd.read_excel('all_data_df.xlsx')

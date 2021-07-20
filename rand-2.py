@@ -6,7 +6,7 @@
 # print(take_closest(num, numbs))
 
 import pandas as pd
-
+import os
 
 # a_list.count("a")
 # year -> state -> count
@@ -28,8 +28,11 @@ def convert_main_air_json(filename):
 # x = convert_main_air_json('main_df_major_airports.xlsx')
 # print(x)
 
-data = {'2000':{'car':2},
-        '2001':{'car':4}}
-
+# data = {'2000':{'car':2},
+#         '2001':{'car':4}}
+path = os.path.join(os.getcwd(), 'Major_airports')
+files = os.listdir(path)
+for file in files:
+    print(file)
 
 
