@@ -41,7 +41,7 @@ Holding_patterns_mapping
 └── EIA_live_map-copy.py 
 ```
 
-EIA_live_map-copy.py is the main file that creates maps
+EIA_live_map-copy.py is the main file which creates maps
 
 Necessary libraries:
 - Pandas

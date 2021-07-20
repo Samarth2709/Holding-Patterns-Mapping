@@ -5,9 +5,7 @@ import os
 import pandas as pd
 import requests
 import time
-import json
 import edit_major_airports_rank as get_mj_air
-# from math import floor as fl
 
 # class for organizing Eia data
 class CarbonEmission:
@@ -183,18 +181,15 @@ def convert_links_to_classes(data):
 
 @status
 def combine_state_df_all(save = False, save_as="All_EIA_Data", data=data):
-    df = pd.DataFrame(columns=["ID", "State", "Population", "Carbon Output perCap", "Carbon Output Type", "Year", "Carbon Output Value", "Unit Measurement",
+    df = pd.DataFrame(columns=["ID", "State", "Carbon Output Type", "Year", "Carbon Output Value", "Unit Measurement",
                                "Updated Time"])
     df = df.astype(dtype={"Year":"int16"})
-    with open('state_pops.json', 'r') as data_file:
-        state_pop = json.load(data_file)
-    print(state_pop.keys())
     for i, state in enumerate(data):
         for sector in data[state]:
             if i == 0:
                 range_years = data[state][sector].get_range_years()
             for j, year in enumerate(range_years):
-                row_to_append = ['', state, state_pop[str(rd(year, -1))][state], data[state][sector].get_data_values()[j]/int(state_pop[str(rd(year, -1))][state]), sector, year, data[state][sector].get_data_values()[j],
+                row_to_append = ['', state, sector, year, data[state][sector].get_data_values()[j],
                                  data[state][sector].get_units(), data[state][sector].get_updated_date()]
                 # [ID, State, Sector, Year, CO2 Output, Unit, Date]
                 df = df.append(pd.Series(row_to_append, index=df.columns), ignore_index=True)
@@ -276,10 +271,11 @@ def convert_mil_metric_ton(df):
     # converts all fuel co2 val (in millions metric tons) to teh co2 val in metric tons
     select = (df["Unit Measurement"] == "million metric tons CO2")
     df.loc[select, "Carbon Output Value"] = 1000000.0 * df.loc[select, "Carbon Output Value"]
+    df.loc[select, "Unit Measurement"] = 'metric tons CO2'
     return df
 
 def take_closest(num,collection):
-   return min(collection,key=lambda x:abs(x-num))
+    return min(collection,key=lambda x:abs(x-num))
 
 
 
