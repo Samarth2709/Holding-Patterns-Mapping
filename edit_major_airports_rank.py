@@ -58,19 +58,29 @@ def create_main_df(dic_dfs, state_col='ST'):
     return main_df
 
 
-df = create_main_df(get_all_dfs())
-print(df)
 
-path = os.path.join(os.getcwd(), 'abbreviation_to_full_state_name.json')
-with open(path, 'r') as raw_json:
-    json_data = json.load(raw_json)
 
-def convert_st_abbrev_to_full(df_main):
+def convert_st_abbrev_to_full(df_main, json_data):
     for row in df_main.index:
         df_main.loc[row, "ST"] = json_data[df_main.loc[row, "ST"]]
     return df_main
 
 
-df = convert_st_abbrev_to_full(df)
+def main():
+    df = create_main_df(get_all_dfs())
+    path = os.path.join(os.getcwd(), 'abbreviation_to_full_state_name.json')
+    with open(path, 'r') as raw_json:
+        json_data = json.load(raw_json)
+    df = convert_st_abbrev_to_full(df, json_data)
+    return df
 
-df.to_excel('main_df_major_airports.xlsx')
+if __name__ == '__main__':
+    df = create_main_df(get_all_dfs())
+    print(df)
+
+    path = os.path.join(os.getcwd(), 'abbreviation_to_full_state_name.json')
+    with open(path, 'r') as raw_json:
+        json_data = json.load(raw_json)
+    df = convert_st_abbrev_to_full()
+
+    df.to_excel('main_df_major_airports.xlsx')

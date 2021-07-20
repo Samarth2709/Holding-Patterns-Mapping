@@ -1,10 +1,12 @@
 # Created by Samarth
 # Nasa VIP Internship
 
+import os
 import pandas as pd
 import requests
 import time
 import json
+import edit_major_airports_rank as get_mj_air
 # from math import floor as fl
 
 # class for organizing Eia data
@@ -248,7 +250,13 @@ def add_major_airport_count(data, main_airports_df=None, main_airports_path='mai
 
 def convert_main_air_json(filename='main_df_major_airports.xlsx', df = None):
     if not df:
-        df = pd.read_excel(filename)
+        if filename not in os.listdir(os.getcwd()):
+            print('-----', filename, "not found")
+            df = get_mj_air.main()
+            df.to_excel(filename)
+        else:
+            print('-----', filename, 'done reading')
+            df = pd.read_excel(filename)
     main_airport_dict = {}
     for year in df['Year'].unique():
         states_in_year = {}
