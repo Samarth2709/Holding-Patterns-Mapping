@@ -67,7 +67,7 @@ def get_json_data(filename='states.json', path=None):
      Input(component_id='sector-button', component_property='value')])
 def update_raw_map(date_dropdown, fuel_type):
     if type(date_dropdown) != str:
-        empty_fig = go.Figure(go.Choropleth(), layout=go.Layout(paper_bgcolor='#f2f7ff'))
+        empty_fig = go.Figure(go.Choropleth(), layout=go.Layout(paper_bgcolor='#ffffff'))
         empty_fig.update_layout(geo_scope='usa', height=800, margin={"r": 0, "t": 0, "l": 0, "b": 0})
         return empty_fig
     year_fuel_type_filter = ((df["Year"] == int(date_dropdown)) & (df["Carbon Output Type"] == fuel_type))
@@ -78,7 +78,7 @@ def update_raw_map(date_dropdown, fuel_type):
                       name=date_dropdown.title(),
                       zmax=df.loc[fuel_type_filter, "Carbon Output Value"].max(),
                       zmin=df.loc[fuel_type_filter, "Carbon Output Value"].min(), colorscale="ylorrd"),
-        layout=go.Layout(paper_bgcolor='#f2f7ff'))
+        layout=go.Layout(paper_bgcolor='#ffffff'))
     # layout=go.Layout(paper_bgcolor=colors['bg']))
     update_fig.update_layout(geo_scope='usa')
     update_fig.update_layout(height=800, margin={"r": 0, "t": 0, "l": 0, "b": 0})
@@ -96,7 +96,7 @@ def update_raw_map(date_dropdown, fuel_type):
      Input(component_id='sector-button-per-air', component_property='value')])
 def update_per_map(date_dropdown, fuel_type):
     if type(date_dropdown) != str:
-        empty_fig = go.Figure(go.Choropleth(), layout=go.Layout(paper_bgcolor='#f2f7ff'))
+        empty_fig = go.Figure(go.Choropleth(), layout=go.Layout(paper_bgcolor='#ffffff'))
         empty_fig.update_layout(geo_scope='usa', height=800, margin={"r": 0, "t": 0, "l": 0, "b": 0})
         return empty_fig
     year_fuel_type_filter = ((df["Year"] == int(date_dropdown)) & (df["Carbon Output Type"] == fuel_type))
@@ -110,7 +110,7 @@ def update_per_map(date_dropdown, fuel_type):
         # go.Scattergeo(lon=, lat=, fillcolor=)
 
     ],
-        layout=go.Layout(paper_bgcolor='#f2f7ff'))
+        layout=go.Layout(paper_bgcolor='#ffffff'))
     update_fig.update_layout(geo_scope='usa')
     update_fig.update_layout(height=800, margin={"r": 0, "t": 0, "l": 0, "b": 0})
     return update_fig
@@ -158,7 +158,7 @@ def get_range_years_for_dropdown(df):
 # Get json data
 json_data = get_json_data()
 
-load_data = False
+load_data = True
 save_df = True
 if load_data:
     df = pd.read_excel('all_data_df.xlsx')
@@ -266,7 +266,7 @@ app.layout = html.Div(children=[
 
 if __name__ == '__main__':
     print("Running server")
-    app.run_server(debug=True)
+    app.run_server(debug=False)
     print("     Running server -- END")
 
 # TODO Rows and columns of app.layout

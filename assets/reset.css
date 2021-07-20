@@ -39,8 +39,8 @@
 }
 
 html{
-    background: #004278;
-    color: white !important;
+    background: #ffffff;
+    color: black !important;
     overflow-x: hidden;
     font-family: Helvetica, Arial, sans-serif;
 }
@@ -93,4 +93,6 @@ html{
     padding-top:5px;
 }
 
-
+.modebar{
+      display: none !important;
+}
