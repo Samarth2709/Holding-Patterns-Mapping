@@ -28,9 +28,10 @@ def convert_main_air_json(filename):
 # x = convert_main_air_json('main_df_major_airports.xlsx')
 # print(x)
 
-data = {'2000':{'car':2},
-        '2001':{'car':4}}
+# data = {'2000':{'car':2},
+#         '2001':{'car':4}}
 
-print(list(data.keys()))
 
+list_stuff = [1].extend([x for x in range(4)])
+print(list_stuff)
 

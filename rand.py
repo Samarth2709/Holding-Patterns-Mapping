@@ -86,13 +86,16 @@ def get_center_json(filename='SuperSector2006.json'):
 
 
 pts = []  # list of points defining boundaries of polygons
+len_json = len(get_center_json()['geometries'])
+center_names = []
 for feature in get_center_json()['geometries']:
     pts.extend(feature['coordinates'][0])
     pts.append([None, None])  # mark the end of a polygon
+    center_names.append(feature['name'])
 
     # else: raise ValueError("geometry type irrelevant for map")
 x, y = zip(*pts)
-print(x, y)
+
 feature_json = {
     "type": "FeatureCollection",
     "features": [
@@ -138,7 +141,9 @@ feature_json = {
         }
     ]
 }
-df2 = pd.DataFrame({'id': [0, 1], 'val': [0, 0]})
+df2 = pd.DataFrame(columns=['name', 'val'])
+df2['name'] = center_names
+df2['val'] = 0
 
 print(df2)
 
@@ -159,15 +164,15 @@ def update_map_slider(date_dropdown, fuel_type):
                       zmax=df.loc[fuel_type_filter, "Carbon Output Value"].max(),
                       zmin=df.loc[fuel_type_filter, "Carbon Output Value"].min(), colorscale="ylorrd"),
         go.Scattergeo(
-            lat=[38.639238],
-            lon=[-116.932475],
+            lat=[38.639238, 38],
+            lon=[-116.932475, -116],
             mode='markers',
-            hovertext="Nevadsssa",
+            hovertext=["Nevadsssa", 'car'],
             hoverinfo="text",
             marker={'size': 10, "color": "red"}
         ),
         # go.Scattergeo(lon=x, lat=y, mode='lines', marker={'size':2, 'color':'blue'} ),
-        go.Choropleth(geojson=feature_json, locations=df2['id'], z=df2['val'], showscale=False, colorscale=[[0, 'rgba(0, 0, 60, 50)']], marker={'opacity': 0.25})],
+        go.Choropleth(geojson=get_center_json(), locations=df2['name'], z=df2['val'], showscale=False, colorscale=[[0, 'rgba(0, 0, 60, 50)']], marker={'opacity': 0.25})],
         # """mode='lines', featureidkey='geometries'"""
         layout=go.Layout(paper_bgcolor='#f2f7ff'))
     # layout=go.Layout(paper_bgcolor=colors['bg']))

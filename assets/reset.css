@@ -52,6 +52,7 @@ html{
 .container {
     width: 100%; /* pick whatever width you want */
     /*display: inline-block;*/
+    display: table;
 
 }
 
@@ -69,12 +70,20 @@ html{
 }
 
 .container .child-radioitems {
-    width: 100%;
+    width: 500px;
     padding-top: 10px;
     padding-left: 12.25%;
     padding-bottom: 5px;
 }
 
+.container .child-checklist {
+    width: 100%;
+    padding-top: 10px;
+    padding-left: 12.25%;
+    padding-bottom: 5px;
+    font-size: 18px;
+
+}
 .container .child-text {
     width: 100%;
     padding-top: 5px;
