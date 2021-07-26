@@ -13,15 +13,7 @@ import eia_data_pull as dp
 import get_sector_mjr_airport as get_mjr_air
 
 # Create dash app with "Carbon Emissions" as tab title
-# External_stylesheets is the style of bg and text ect.
-app = dash.Dash(__name__, title='Carbon Emissions')  # external_stylesheets=[dbc.themes.BOOTSTRAP]
-# dbc.themes.SUPERHERO
-
-# Colors in hex code
-colors = {
-    'text': '#000000',
-    'bg': '#2b3e50'
-}
+app = dash.Dash(__name__, title='Carbon Emissions')
 
 
 def get_eia_data():  # gets eia data for each state for each sector as a CarbonEmissions class
@@ -218,16 +210,6 @@ def update_per_map(date_dropdown, fuel_type, checkoptions):
     update_fig.update_layout(height=800, margin={"r": 0, "t": 0, "l": 0, "b": 0})
     return update_fig
 
-
-# layout = go.Layout(paper_bgcolor=colors['bg']
-# bgcolor=colors['bg'] in dict
-# plot_bgcolor=colors['bg']
-# , layout = go.Layout(
-# geo=dict(bgcolor= colors['bg'], lakecolor=colors['bg']),
-# paper_bgcolor=colors['bg'],
-# plot_bgcolor=colors['bg'])
-#     update_fig.update_layout(transition_duration=100, plot_bgcolor=colors['bg'])
-
 # Updates Title-sector with value into its children parameter (Updates title with type of carbon output(all fuel,
 #       aviation gasoline, jet fuel))
 @app.callback(
@@ -403,9 +385,3 @@ if __name__ == '__main__':
     print("Running server")
     app.run_server(debug=False)
     print("     Running server -- END")
-
-# TODO Rows and columns of app.layout
-# TODO Plot sectors
-# TODO Create per capita map
-# TODO get embedded figure
-# TODO fix CO2 for all fuel (millions -> normal)
