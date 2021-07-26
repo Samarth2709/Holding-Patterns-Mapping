@@ -228,13 +228,6 @@ def update_per_map(date_dropdown, fuel_type, checkoptions):
 # plot_bgcolor=colors['bg'])
 #     update_fig.update_layout(transition_duration=100, plot_bgcolor=colors['bg'])
 
-
-# @app.callback(
-#     Output(component_id='', component_property=''),
-#     [Input(component_id='', component_property='')])
-# def update(sector_name):
-#     pass
-
 # Updates Title-sector with value into its children parameter (Updates title with type of carbon output(all fuel,
 #       aviation gasoline, jet fuel))
 @app.callback(
@@ -292,7 +285,7 @@ print(df.columns)
 # layout of app
 app.layout = html.Div(children=[
     html.H1(id='Title-sector', style={"margin": 0}),
-    html.H3(children='Data was provided by the EIA.'),
+    html.H3(children='Data was provided by the U.S. Energy Information Administration'),
     dcc.Tabs(id='all-tabs', value='raw-carbon', children=[
         dcc.Tab(id='raw-carbon', value='raw-carbon', label='Raw Carbon Emissions',
                 style={'color': 'black', 'fontSize': '20px'},
@@ -329,7 +322,7 @@ app.layout = html.Div(children=[
                                 {'label': 'Display Aviation Sectors and Centers', 'value': 'display centers'}
                             ],
                             id='display-options',
-                            value=['display airports', 'display centers'],
+                            value=[],
                             style={},
                             className='child-checklist',
                             labelStyle={"margin-right": "25px"}
@@ -379,10 +372,10 @@ app.layout = html.Div(children=[
                         dcc.Checklist(
                             options=[
                                 {'label': 'Display Major Airports', 'value': 'display airports'},
-                                {'label': 'Display Aviation Sectors and Centers', 'value': 'display centers'}
+                                {'label': 'Display Aviation Centers', 'value': 'display centers'}
                             ],
                             id='display-options-per-air',
-                            value=['display airports', 'display centers'],
+                            value=[],
                             style={},
                             className='child-checklist',
                             labelStyle={"margin-right": "25px"})
@@ -408,7 +401,7 @@ app.layout = html.Div(children=[
 
 if __name__ == '__main__':
     print("Running server")
-    app.run_server(debug=True)
+    app.run_server(debug=False)
     print("     Running server -- END")
 
 # TODO Rows and columns of app.layout
