@@ -3,7 +3,7 @@
 
 import json
 import pandas as pd
-import random
+import rand
 import numpy as np
 import plotly.express as px
 # import plotly.io as pio
@@ -70,7 +70,7 @@ json_data = json.load(open(path, 'r'))
 # District of Columbia not in states list
 # Puerto Rico not in states list
 
-df = pd.DataFrame({'State': pd.Series(states), 'Random_Data': pd.Series(random.sample(range(1, 51), 50))}, columns=['State', 'Random_Data', 'ID'])
+df = pd.DataFrame({'State': pd.Series(states), 'Random_Data': pd.Series(rand.sample(range(1, 51), 50))}, columns=['State', 'Random_Data', 'ID'])
 
 state_id_map = {}
 for state_data in json_data['features']:

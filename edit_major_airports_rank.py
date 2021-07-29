@@ -47,7 +47,6 @@ def get_all_dfs(path=None, state_col="ST"):
     return dfs
 
 
-
 def create_main_df(dic_dfs, state_col='ST'):
     # concatenates all dfs in dict dfs with their associated year
     main_df = pd.DataFrame(columns=["Year", state_col, "Enplanements"])
@@ -58,8 +57,6 @@ def create_main_df(dic_dfs, state_col='ST'):
         dic_dfs[file]["Year"] = year
         main_df = pd.concat([main_df, dic_dfs[file]], axis=0, ignore_index=True)
     return main_df
-
-
 
 
 def convert_st_abbrev_to_full(df_main, json_data):

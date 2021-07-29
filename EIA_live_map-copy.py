@@ -49,7 +49,8 @@ def get_json_data(filename='states.json', path=None):
     # jsondata = json.load(open(path, 'r'))
     with open(path, 'r') as json_raw:
         jsondata = json.load(json_raw)
-    #     with urlopen('https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json') as response:
+    #     with urlopen('https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json')
+    #     as response:
     #         jsondata = json.load(response)
     return jsondata
 
@@ -86,13 +87,13 @@ def update_raw_map(date_dropdown, fuel_type, checkoptions):
                           zmin=df.loc[fuel_type_filter, "Carbon Output Value"].min(), colorscale="ylorrd",
                           hovertemplate='State: %{hovertext} <br>Carbon Emission: %{z}'),
             go.Scattergeo(lat=mjr_lat, lon=mjr_lon, mode='markers', hoverinfo='text', hovertext=mjr_name,
-                          marker={'size': 7, "color": "#00446b"}),
-            #scatter centers
+                          marker={'size': 9, "color": "#00446b"}),
+            # scatter centers
             go.Choropleth(geojson=center_data, locations=center_data_names,
                           z=center_df['val'], showscale=False,
-                          colorscale=[[0, 'rgba(215, 215, 215, 1)']], marker={'opacity': 0.5}, hoverinfo='text',
+                          colorscale=[[0, 'rgba(0, 0, 0, 1)']], marker={'opacity': 0.6}, hoverinfo='text',
                           hovertext=center_data_names)
-            ])
+        ])
     elif 'display airports' in checkoptions:
         update_fig = go.Figure([
             go.Choropleth(geojson=json_data, locations=df[year_fuel_type_filter]['ID'],
@@ -102,7 +103,7 @@ def update_raw_map(date_dropdown, fuel_type, checkoptions):
                           zmin=df.loc[fuel_type_filter, "Carbon Output Value"].min(), colorscale="ylorrd",
                           hovertemplate='State: %{hovertext} <br>Carbon Emission: %{z}'),
             go.Scattergeo(lat=mjr_lat, lon=mjr_lon, mode='markers', hoverinfo='text', hovertext=mjr_name,
-                          marker={'size': 7, "color": "#00446b"}),
+                          marker={'size': 9, "color": "#00446b"}),
         ])
     elif 'display centers' in checkoptions:
         update_fig = go.Figure([
@@ -112,10 +113,10 @@ def update_raw_map(date_dropdown, fuel_type, checkoptions):
                           zmax=df.loc[fuel_type_filter, "Carbon Output Value"].max(),
                           zmin=df.loc[fuel_type_filter, "Carbon Output Value"].min(), colorscale="ylorrd",
                           hovertemplate='State: %{hovertext} <br>Carbon Emission: %{z}'),
-        # scatter centers
+            # scatter centers
             go.Choropleth(geojson=center_data, locations=center_data_names,
                           z=center_df['val'], showscale=False,
-                          colorscale=[[0, 'rgba(215, 215, 215, 1)']], marker={'opacity': 0.5}, hoverinfo='text',
+                          colorscale=[[0, 'rgba(0, 0, 0, 1)']], marker={'opacity': 0.6}, hoverinfo='text',
                           hovertext=center_data_names)
         ])
 
@@ -128,14 +129,14 @@ def update_raw_map(date_dropdown, fuel_type, checkoptions):
                           zmin=df.loc[fuel_type_filter, "Carbon Output Value"].min(), colorscale="ylorrd",
                           hovertemplate='State: %{hovertext} <br>Carbon Emission: %{z}')])
 
-    #layout=go.Layout(paper_bgcolor='#ffffff')
+    # layout=go.Layout(paper_bgcolor='#ffffff')
 
     update_fig.update_layout(geo_scope='usa')
     update_fig.update_layout(height=800, margin={"r": 0, "t": 0, "l": 0, "b": 0})
     update_fig.update_coloraxes(colorbar_tickcolor='#a83232')
     update_fig.update_coloraxes(colorbar_tickfont_color='#a83232')
-    print(str(fuel_type), "max", str(df.loc[fuel_type_filter, "Carbon Output Value"].max()))
-    print(str(fuel_type), "min", str(df.loc[fuel_type_filter, "Carbon Output Value"].min()))
+    # print(str(fuel_type), "max", str(df.loc[fuel_type_filter, "Carbon Output Value"].max()))
+    # print(str(fuel_type), "min", str(df.loc[fuel_type_filter, "Carbon Output Value"].min()))
     return update_fig
 
 
@@ -157,51 +158,56 @@ def update_per_map(date_dropdown, fuel_type, checkoptions):
             go.Choropleth(geojson=json_data, locations=df[year_fuel_type_filter]['ID'],
                           z=df[year_fuel_type_filter]["Carbon per Airport Count"],
                           name='', hovertext=df[year_fuel_type_filter]['State'],
-                          # hoverinfo='text', hovertext=[df[year_fuel_type_filter]['State'], df[year_fuel_type_filter]['Carbon per Airport Count']],
+                          # hoverinfo='text', hovertext=[df[year_fuel_type_filter]['State'],
+                          # df[year_fuel_type_filter]['Carbon per Airport Count']],
                           zmax=df.loc[fuel_type_filter, 'Carbon per Airport Count'].max(),
                           zmin=df.loc[fuel_type_filter, 'Carbon per Airport Count'].min(), colorscale="ylorrd",
                           hovertemplate='State: %{hovertext} <br>Carbon Emission: %{z}'),
-            go.Scattergeo(lat=mjr_lat, lon=mjr_lon, mode='markers', hoverinfo='text', hovertext=mjr_name, marker={'size': 7, "color": "#00446b"}),
-        # scatter centers
+            go.Scattergeo(lat=mjr_lat, lon=mjr_lon, mode='markers', hoverinfo='text', hovertext=mjr_name,
+                          marker={'size': 9, "color": "#00446b"}),
+            # scatter centers
             go.Choropleth(geojson=center_data, locations=center_data_names,
                           z=center_df['val'], showscale=False,
-                          colorscale=[[0, 'rgba(215, 215, 215, 1)']], marker={'opacity': 0.5}, hoverinfo='text',
+                          colorscale=[[0, 'rgba(0, 0, 0, 1)']], marker={'opacity': 0.6}, hoverinfo='text',
                           hovertext=center_data_names)
 
         ])
-            # layout=go.Layout(paper_bgcolor='#ffffff'))
+        # layout=go.Layout(paper_bgcolor='#ffffff'))
     elif 'display airports' in checkoptions:
         update_fig = go.Figure([
             go.Choropleth(geojson=json_data, locations=df[year_fuel_type_filter]['ID'],
                           z=df[year_fuel_type_filter]["Carbon per Airport Count"],
                           name='', hovertext=df[year_fuel_type_filter]['State'],
-                          # hoverinfo='text', hovertext=[df[year_fuel_type_filter]['State'], df[year_fuel_type_filter]['Carbon per Airport Count']],
+                          # hoverinfo='text', hovertext=[df[year_fuel_type_filter]['State'],
+                          # df[year_fuel_type_filter]['Carbon per Airport Count']],
                           zmax=df.loc[fuel_type_filter, 'Carbon per Airport Count'].max(),
                           zmin=df.loc[fuel_type_filter, 'Carbon per Airport Count'].min(), colorscale="ylorrd",
                           hovertemplate='State: %{hovertext} <br>Carbon Emission: %{z}'),
             go.Scattergeo(lat=mjr_lat, lon=mjr_lon, mode='markers', hoverinfo='text', hovertext=mjr_name,
-                          marker={'size': 7, "color": "#00446b"})])
+                          marker={'size': 9, "color": "#00446b"})])
     elif 'display centers' in checkoptions:
         update_fig = go.Figure([
             go.Choropleth(geojson=json_data, locations=df[year_fuel_type_filter]['ID'],
                           z=df[year_fuel_type_filter]["Carbon per Airport Count"],
                           name='', hovertext=df[year_fuel_type_filter]['State'],
-                          # hoverinfo='text', hovertext=[df[year_fuel_type_filter]['State'], df[year_fuel_type_filter]['Carbon per Airport Count']],
+                          # hoverinfo='text', hovertext=[df[year_fuel_type_filter]['State'],
+                          # df[year_fuel_type_filter]['Carbon per Airport Count']],
                           zmax=df.loc[fuel_type_filter, 'Carbon per Airport Count'].max(),
                           zmin=df.loc[fuel_type_filter, 'Carbon per Airport Count'].min(), colorscale="ylorrd",
                           hovertemplate='State: %{hovertext} <br>Carbon Emission: %{z}'),
-        #   center drawing
+            #   center drawing
             go.Choropleth(geojson=center_data, locations=center_data_names,
                           z=center_df['val'], showscale=False,
-                          colorscale=[[0, 'rgba(215, 215, 215, 1)']], marker={'opacity': 0.5}, hoverinfo='text',
-                          hovertext=center_data_names)
+                          colorscale=[[0, 'rgba(0, 0, 0, 1)']], marker={'opacity': 0.6}, hoverinfo='text',
+                          hovertext=center_data_names)  # 215
         ])
     else:
         update_fig = go.Figure([
             go.Choropleth(geojson=json_data, locations=df[year_fuel_type_filter]['ID'],
                           z=df[year_fuel_type_filter]["Carbon per Airport Count"],
                           name='', hovertext=df[year_fuel_type_filter]['State'],
-                          # hoverinfo='text', hovertext=[df[year_fuel_type_filter]['State'], df[year_fuel_type_filter]['Carbon per Airport Count']],
+                          # hoverinfo='text', hovertext=[df[year_fuel_type_filter]['State'],
+                          # df[year_fuel_type_filter]['Carbon per Airport Count']],
                           zmax=df.loc[fuel_type_filter, 'Carbon per Airport Count'].max(),
                           zmin=df.loc[fuel_type_filter, 'Carbon per Airport Count'].min(), colorscale="ylorrd",
                           hovertemplate='State: %{hovertext} <br>Carbon Emission: %{z}')])
@@ -209,6 +215,7 @@ def update_per_map(date_dropdown, fuel_type, checkoptions):
     update_fig.update_layout(geo_scope='usa')
     update_fig.update_layout(height=800, margin={"r": 0, "t": 0, "l": 0, "b": 0})
     return update_fig
+
 
 # Updates Title-sector with value into its children parameter (Updates title with type of carbon output(all fuel,
 #       aviation gasoline, jet fuel))
@@ -261,8 +268,8 @@ center_df = pd.DataFrame(columns=['names', 'val'])
 center_df['names'] = center_data_names
 center_df['val'] = 0
 
-print(df)
-print(df.columns)
+# print(df)
+# # print(df.columns)
 
 # layout of app
 app.layout = html.Div(children=[
@@ -301,7 +308,7 @@ app.layout = html.Div(children=[
                         dcc.Checklist(
                             options=[
                                 {'label': 'Display Major Airports', 'value': 'display airports'},
-                                {'label': 'Display Aviation Sectors and Centers', 'value': 'display centers'}
+                                {'label': 'Display Aviation Centers', 'value': 'display centers'}
                             ],
                             id='display-options',
                             value=[],
@@ -311,12 +318,11 @@ app.layout = html.Div(children=[
                         ),
                     ], className='container'),
 
-
                     dcc.Graph(
                         id='example-map',
-                        style={"width": '75%', "margin": 'auto', # 'align-items': 'center',
+                        style={"width": '75%', "margin": 'auto',  # 'align-items': 'center',
                                'justifyContent': 'center', "padding": "20px", "height": "800px",
-                               "borderRadius": "25px"}, #"padding-bottom": "10px"
+                               "borderRadius": "25px"},  # "padding-bottom": "10px"
                         config={'scrollZoom': False},
                         #          figure=None
                     ),
@@ -366,7 +372,7 @@ app.layout = html.Div(children=[
 
                     dcc.Graph(
                         id='emissions-per-air',
-                        style={"width": '75%', "margin": 'auto', # 'align-items': 'center',
+                        style={"width": '75%', "margin": 'auto',  # 'align-items': 'center',
                                'justifyContent': 'center', "padding": "20px", "height": "800px",
                                "borderRadius": "25px", "padding-bottom": "10px"},
                         config={'scrollZoom': False},
@@ -376,7 +382,8 @@ app.layout = html.Div(children=[
     ]),
     html.H4(children='Updated: ' + dp.format_eia_update_date(df["Updated Time"].iloc[0]),
             style={'padding-left': '12.5%', 'fontWeight': 'normal'}, className='bottom-text'),
-    html.H4(children='Carbon Emissions in ' + df['Unit Measurement'].iloc[0], style={'paddingLeft': '12.5%', 'fontWeight': 'normal'},
+    html.H4(children='Carbon Emissions in ' + df['Unit Measurement'].iloc[0],
+            style={'paddingLeft': '12.5%', 'fontWeight': 'normal'},
             className='bottom-text'),
 
 ], className='div-main-background')

@@ -7,6 +7,7 @@ import requests
 import time
 import edit_major_airports_rank as get_mj_air
 
+
 # class for organizing Eia data
 class CarbonEmission:
     def __init__(self, link):
@@ -51,6 +52,7 @@ class CarbonEmission:
         data_vals = pd.Series(self.get_data_values(), index=df.columns)
         df = df.append(data_vals, ignore_index=True)
         return df
+
 
 # Converts seconds to minutes and hrs
 def time_convert(sec):
